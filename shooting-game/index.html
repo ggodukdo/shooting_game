@@ -1,166 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Shooting Game</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shooting Game</title>
 
-  <!-- CSS: index.html이 src/에 있으므로 ./css/style.css -->
-  <link rel="stylesheet" href="./css/style.css">
+<!-- CSS -->
+<link rel="stylesheet" href="./shooting-game/src/css/style.css">
 
-  <!-- favicon: 파일이 없어서 404가 나므로 간단한 SVG 데이터 URI로 대체 -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ff7ab6' rx='8'/%3E%3Ctext x='50%25' y='54%25' font-size='36' text-anchor='middle' fill='white' font-family='Arial' dy='.2em'%3E%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+<!-- favicon -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ff7ab6' rx='8'/%3E%3Ctext x='50%25' y='54%25' font-size='36' text-anchor='middle' fill='white' font-family='Arial' dy='.2em'%3E%3C/text%3E%3C/svg%3E" type="image/svg+xml">
 </head>
 <body>
-  <!-- 게임 캔버스 등 -->
-  <canvas id="gameCanvas"></canvas>
 
-  <!-- 화면 하단 컨트롤(안전영역 고려) -->
-  <div class="controls" aria-hidden="false">
-    <div class="joystick" id="joystick"></div>
-    <button class="button" id="fireBtn">발사</button> <!-- 필요시 -->
+<canvas id="gameCanvas"></canvas>
+
+<div class="controls">
+  <div class="joystick" id="joystick"></div>
+  <button class="button" id="fireBtn">발사</button>
+</div>
+
+<!-- Start overlay -->
+<div id="startOverlay" class="overlay">
+  <div class="dialog">
+    <h1>슈팅 게임</h1>
+    <p>터치 조이스틱으로 이동하면 자동으로 발사됩니다.</p>
+    <div class="dialog-buttons">
+      <button id="startBtn">시작</button>
+    </div>
   </div>
+</div>
 
-    <!-- Start overlay -->
-    <div id="startOverlay" class="overlay">
-        <div class="dialog">
-            <h1>슈팅 게임</h1>
-            <p>터치 조이스틱으로 이동하면 자동으로 발사됩니다.</p>
-            <div class="dialog-buttons">
-                <button id="startBtn">시작</button>
-            </div>
-        </div>
+<!-- Intro overlay -->
+<div id="introOverlay" class="overlay" style="display:none;">
+  <div class="dialog intro-dialog" id="introDialog">
+    <p id="introText"></p>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div id="successOverlay" class="overlay" style="display:none; background:#fff; color:#000;">
+  <div style="text-align:center;">
+    <h1 id="successTitle" style="color:gold; font-size:48px; margin:8px;">SUCCESS</h1>
+    <div id="stars" style="margin:8px;"></div>
+    <div class="dialog" style="position:absolute; bottom:24px; left:50%; transform:translateX(-50%);">
+      <p style="color:#fff;">축하드립니다. 나쁜말들을 없애는데 성공하셨습니다. 이제 게임을 벗어나 현실에서 실천해 봅시다.</p>
+      <button id="successContinue">다음</button>
     </div>
+  </div>
+</div>
 
-    <!-- Intro dialog sequence (black screen) -->
-    <div id="introOverlay" class="overlay" style="display:none;">
-        <div class="dialog intro-dialog" id="introDialog">
-            <p id="introText"></p>
-        </div>
+<!-- QR overlay -->
+<div id="qrOverlay" class="overlay" style="display:none;">
+  <div style="text-align:center;">
+    <div id="qrPlaceholder" style="width:280px; height:280px; margin:24px auto;">
+      <img id="qrImage" src="./shooting-game/src/assets/qr.jpg" alt="QR 코드"
+           style="width:100%; height:100%; object-fit:contain;"
+           onerror="window.handleMissingQR && window.handleMissingQR(this)">
     </div>
+    <button id="retryBtn">다시하기</button>
+  </div>
+</div>
 
-    <!-- Success screen -->
-    <div id="successOverlay" class="overlay" style="display:none; background:#fff; color:#000;">
-        <div style="text-align:center;">
-            <h1 id="successTitle" style="color:gold; font-size:48px; margin:8px;">SUCCESS</h1>
-            <div id="stars" style="margin:8px;"></div>
-            <div class="dialog" style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);">
-                <p style="color:#fff;">축하드립니다. 나쁜말들을 없애는데 성공하셨습니다. 이제 게임을 벗어나 현실에서 실천해 봅시다.</p>
-                <button id="successContinue">다음</button>
-            </div>
-        </div>
+<!-- Game Over overlay -->
+<div id="gameOverOverlay" class="overlay" style="display:none; background:#fff; color:#000;">
+  <div style="position:relative; width:100%; height:100%;">
+    <h1 style="color:#000; text-align:center; margin-top:120px; font-size:48px;">GAME OVER</h1>
+    <div class="dialog" style="position:absolute; bottom:24px; left:50%; transform:translateX(-50%); background: rgba(128,128,128,0.6); color:#fff;">
+      <p>나쁜말을 모두 잡는데 실패했다.</p>
     </div>
+    <button id="topRetry" style="position:absolute; top:12px; right:12px;">다시하기</button>
+  </div>
+</div>
 
-    <!-- QR placeholder / 엔딩 화면의 QR 이미지 -->
-    <div id="qrOverlay" class="overlay" style="display:none;">
-      <div style="text-align:center;">
-        <!-- 실제 파일을 src/assets/qr.png 로 넣는 것을 권장합니다 -->
-                <div id="qrPlaceholder" style="width:280px; height:280px; margin:24px auto;">
-                    <img id="qrImage" src="./assets/qr.png" alt="결과 QR 코드"
-                             style="width:100%; height:100%; object-fit:contain; border-radius:6px;"
-                             onerror="window.handleMissingQR && window.handleMissingQR(this)" />
-                </div>
-        <div style="margin-top:12px;">
-          <button id="retryBtn">다시하기</button>
-        </div>
-      </div>
-    </div>
+<div class="health-bar">
+  <div class="health-fill"></div>
+</div>
 
-    <!-- Game Over overlay -->
-    <div id="gameOverOverlay" class="overlay" style="display:none; background:#fff; color:#000;">
-        <div style="position:relative; width:100%; height:100%;">
-            <h1 style="color:#000; text-align:center; margin-top:120px; font-size:48px;">GAME OVER</h1>
-            <div class="dialog" style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(128,128,128,0.6); color: #fff;">
-                <p>나쁜말을 모두 잡는데 실패했다.</p>
-            </div>
-            <button id="topRetry" style="position:absolute; top:12px; right:12px;">다시하기</button>
-        </div>
-    </div>
-    <!-- Health bar -->
-    <div class="health-bar">
-        <div class="health-fill"></div>
-    </div>
-    <!-- debug log removed -->
-    <script src="./js/entities.js"></script>
-    <script src="./js/game.js"></script>
-    <script src="./js/main.js"></script>
-    <script>
-        // Small helper: show a friendly placeholder if qr.png is missing
-        if (!window.handleMissingQR) {
-            window.handleMissingQR = function(img) {
-                try {
-                    img.style.display = 'none';
-                    var ph = document.createElement('div');
-                    ph.id = 'qrMissingPlaceholder';
-                    ph.textContent = 'QR 이미지를 찾을 수 없습니다.';
-                    ph.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f3f3f3;color:#444;border-radius:6px;font-size:14px;padding:8px;box-sizing:border-box;';
-                    img.parentNode && img.parentNode.appendChild(ph);
-                    console.warn('qr.png not found at ./assets/qr.png');
-                } catch (e) { console.warn('handleMissingQR failed', e); }
-            };
-        }
+<!-- JS 파일 -->
+<script src="./shooting-game/src/js/entities.js"></script>
+<script src="./shooting-game/src/js/game.js"></script>
+<script src="./shooting-game/src/js/main.js"></script>
 
-        // Self-contained intro flow (fallback) so Start always advances dialogs
-        if (!window.__INLINE_INTRO_TEXTS__) {
-            window.__INLINE_INTRO_TEXTS__ = [
-                "모두가 바르게 살아야 한다는 것을 안다. 하지만 그걸 실천하는 사람은 얼마나 되는가?",
-                "여태 상대방의 태도에 상처받은 이들을 많이 보았다. 아주 큰 상처이든 작은 상처이든.",
-                "그래서 나는 다짐하였다. 이 세상의 나쁜말들을 부수기로."
-            ];
-        }
+<script>
+if (!window.__INLINE_INTRO_TEXTS__) {
+  window.__INLINE_INTRO_TEXTS__ = [
+    "모두가 바르게 살아야 한다는 것을 안다. 하지만 그걸 실천하는 사람은 얼마나 되는가?",
+    "여태 상대방의 태도에 상처받은 이들을 많이 보았다. 아주 큰 상처이든 작은 상처이든.",
+    "그래서 나는 다짐하였다. 이 세상의 나쁜말들을 부수기로."
+  ];
+}
 
-        document.getElementById('startBtn').addEventListener('click', () => {
-            // hide start overlay
-            const startOv = document.getElementById('startOverlay');
-            if (startOv) startOv.style.display = 'none';
-            // show intro overlay
-            const introOv = document.getElementById('introOverlay');
-            const introText = document.getElementById('introText');
-            let idx = 0;
-            if (!introOv || !introText) return;
-            introText.textContent = window.__INLINE_INTRO_TEXTS__[idx];
-            introOv.style.display = 'flex';
+// 시작 버튼 이벤트
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('startOverlay').style.display = 'none';
+  const introOv = document.getElementById('introOverlay');
+  const introText = document.getElementById('introText');
+  let idx = 0;
+  introText.textContent = window.__INLINE_INTRO_TEXTS__[idx];
+  introOv.style.display = 'flex';
 
-            let lastAdvance = 0;
-            const advance = (e) => {
-                e.preventDefault();
-                const now = Date.now();
-                if (now - lastAdvance < 1000) return; // require 1s between advances
-                lastAdvance = now;
-                idx++;
-                if (idx < window.__INLINE_INTRO_TEXTS__.length) {
-                    introText.textContent = window.__INLINE_INTRO_TEXTS__[idx];
-                } else {
-                    introOv.style.display = 'none';
-                    introOv.removeEventListener('pointerdown', advance);
-                    introOv.removeEventListener('click', advance);
-                    introOv.removeEventListener('touchstart', advance);
-                    // call external start if available
-                    console.log('Intro finished — attempting to call startGame()');
-                    if (typeof window.hideAllOverlays === 'function') {
-                        try { window.hideAllOverlays(); } catch(e) { console.warn('hideAllOverlays failed', e); }
-                    }
-                    if (typeof window.startGame === 'function') {
-                        console.log('startGame exists — calling it');
-                        window.startGame();
-                    } else {
-                        console.log('startGame not found on window');
-                    }
-                }
-            };
+  const advance = (e) => {
+    e.preventDefault();
+    idx++;
+    if (idx < window.__INLINE_INTRO_TEXTS__.length) {
+      introText.textContent = window.__INLINE_INTRO_TEXTS__[idx];
+    } else {
+      introOv.style.display = 'none';
+      introOv.removeEventListener('pointerdown', advance);
+      introOv.removeEventListener('click', advance);
+      introOv.removeEventListener('touchstart', advance);
+      if (typeof window.startGame === 'function') window.startGame();
+    }
+  };
 
-            introOv.addEventListener('pointerdown', advance);
-            introOv.addEventListener('click', advance);
-            introOv.addEventListener('touchstart', advance);
-        });
+  // 모바일 + PC 이벤트 모두 등록
+  introOv.addEventListener('pointerdown', advance);
+  introOv.addEventListener('click', advance);
+  introOv.addEventListener('touchstart', advance);
+});
 
-        document.getElementById('retryBtn').addEventListener('click', () => {
-            window.location.reload();
-        });
+// 다시하기 버튼
+document.getElementById('retryBtn').addEventListener('click', () => window.location.reload());
+document.getElementById('topRetry').addEventListener('click', () => window.location.reload());
 
-        document.getElementById('topRetry').addEventListener('click', () => {
-            window.location.reload();
-        });
-    </script>
+// QR 이미지 없을 때 처리
+if (!window.handleMissingQR) {
+  window.handleMissingQR = function(img){
+    img.style.display='none';
+    const ph=document.createElement('div');
+    ph.id='qrMissingPlaceholder';
+    ph.textContent='QR 이미지를 찾을 수 없습니다.';
+    ph.style.cssText='width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f3f3f3;color:#444;border-radius:6px;font-size:14px;padding:8px;box-sizing:border-box;';
+    img.parentNode && img.parentNode.appendChild(ph);
+    console.warn('qr.jpg not found at ./shooting-game/src/assets/qr.jpg');
+  }
+}
+</script>
+
 </body>
 </html>
