@@ -1,0 +1,20 @@
+{
+  "name": "shooting-game",
+  "version": "1.0.0",
+  "description": "A simple shooting game built with HTML, CSS, and JavaScript.",
+  "main": "src/js/main.js",
+  "scripts": {
+    "start": "live-server src"
+  },
+  "keywords": [
+    "shooting",
+    "game",
+    "javascript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  }
+}

@@ -1,0 +1,144 @@
+body {
+    background-color: #000;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+canvas {
+    border: 2px solid #fff;
+    background-color: #222;
+    /* Prevent default touch gestures (scroll/zoom) on the canvas */
+    touch-action: none;
+    -ms-touch-action: none;
+}
+
+/* Start overlay styles */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    pointer-events: auto;
+}
+
+.dialog {
+    background: #111;
+    color: #fff;
+    padding: 20px 24px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 320px;
+}
+
+.dialog button {
+    background: #0b84ff;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.dialog p { margin: 12px 0; }
+
+/* Intro dialog specific */
+.intro-dialog {
+    background: rgba(128,128,128,0.7); /* semi-transparent gray */
+    color: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    max-width: 340px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+}
+.intro-dialog p { font-size: 18px; margin:0; }
+
+/* responsive controls container: avoids screen edges / safe-area */
+.controls {
+  position: fixed;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  left: calc(12px + env(safe-area-inset-left));
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+/* joystick: touch-friendly size and padding */
+.joystick {
+  width: 96px;
+  height: 96px;
+  min-width: 72px;
+  min-height: 72px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* generic button style for start/retry/etc. */
+.button {
+  min-width: 56px;
+  min-height: 44px; /* 최소 터치 타깃 */
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* make start overlay dialog constrained and centered (avoid edges) */
+.overlay .dialog {
+  max-width: 92%;
+  margin: 0 auto;
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+/* healthbar: keep away from bottom-left safe area */
+.health-bar {
+  left: calc(12px + env(safe-area-inset-left));
+  bottom: calc(12px + env(safe-area-inset-bottom));
+}
+
+/* Player heart (visual guidance) */
+.player-heart { display:none; }
+
+/* Health bar bottom-left */
+.health-bar {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    width: 120px;
+    height: 12px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.health-fill { height:100%; background: #ff7ab6; width:100%; }
+
+/* Hide health bar initially when gameplay starts; it will be shown by JS if needed */
+.health-bar.hidden { display: none !important; }
+
+/* Success stars */
+#stars { display:flex; gap:6px; justify-content:center; }
+.star { width:12px; height:12px; background:gold; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+
+/* Small-screen adjustments */
+@media (max-width: 600px) {
+  .joystick { width: 110px; height: 110px; }
+  .button { min-width: 64px; min-height: 50px; font-size: 18px; }
+  .dialog p { font-size: 18px; }
+}
