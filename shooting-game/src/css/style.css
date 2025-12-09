@@ -74,31 +74,6 @@ canvas {
   pointer-events: auto;
 }
 
-/* joystick: touch-friendly size and padding */
-.joystick {
-  width: 96px;
-  height: 96px;
-  min-width: 72px;
-  min-height: 72px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.22);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* generic button style for start/retry/etc. */
-.button {
-  min-width: 56px;
-  min-height: 44px; /* 최소 터치 타깃 */
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
 /* make start overlay dialog constrained and centered (avoid edges) */
 .overlay .dialog {
   max-width: 92%;
