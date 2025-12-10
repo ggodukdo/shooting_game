@@ -109,7 +109,7 @@ class Enemy {
         this.text = txt;
         // shooting timing for enemy bullets
         this.lastShot = Date.now();
-        this.shootInterval = 1000; // ms
+        this.shootInterval = 1500; // ms
     }
 
     // Enemies do not move from their spawn position
