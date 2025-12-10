@@ -145,3 +145,6 @@ canvas {
 .joystick, #fireBtn {
     display: none;
 }
+#fireBtn {
+  display: none !important;
+}
