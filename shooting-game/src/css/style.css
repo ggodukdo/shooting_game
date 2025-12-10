@@ -142,3 +142,6 @@ canvas {
   .button { min-width: 64px; min-height: 50px; font-size: 18px; }
   .dialog p { font-size: 18px; }
 }
+.joystick, #fireBtn {
+    display: none;
+}
